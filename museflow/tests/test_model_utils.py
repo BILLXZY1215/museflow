@@ -1,10 +1,10 @@
 # pylint: disable=attribute-defined-outside-init
 
+from museflow import model_utils
 import numpy as np
 from numpy.testing import assert_equal
-import tensorflow as tf
-
-from museflow import model_utils
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 class TestDatasetManager:

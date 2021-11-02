@@ -1,11 +1,13 @@
 from contextlib import contextmanager
 
 from cached_property import threaded_cached_property as cached_property
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 def using_scope(function):
     """A decorator that wraps a method in `self.use_scope()`."""
+
     def wrapper(self, *args, **kwargs):
         with self.use_scope():
             return function(self, *args, **kwargs)

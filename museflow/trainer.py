@@ -1,3 +1,4 @@
+from museflow import logger
 import abc
 import copy
 import os
@@ -5,9 +6,8 @@ import types
 
 from confugue import configurable
 import numpy as np
-import tensorflow as tf
-
-from museflow import logger
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 class BaseTrainer(metaclass=abc.ABCMeta):

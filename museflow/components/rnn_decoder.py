@@ -1,8 +1,9 @@
-from confugue import configurable
-import tensorflow as tf
-
-from museflow.nn.rnn import DropoutWrapper
+import tensorflow_addons as tfa
 from .component import Component, using_scope
+from museflow.nn.rnn import DropoutWrapper
+from confugue import configurable
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 @configurable(params=['pre_attention', 'max_length', 'name'])
@@ -81,7 +82,7 @@ class RNNDecoder(Component):
         with tf.name_scope('decode_train'):
             initial_state = self._make_initial_state(batch_size, initial_state)
             sequence_length = tf.reduce_sum(target_weights, axis=1)
-            helper = tf.contrib.seq2seq.TrainingHelper(
+            helper = tfa.seq2seq.TrainingHelper(
                 inputs=embedded_inputs,
                 sequence_length=sequence_length,
                 time_major=False)
@@ -132,21 +133,21 @@ class RNNDecoder(Component):
         }
 
         if mode == 'greedy':
-            return tf.contrib.seq2seq.GreedyEmbeddingHelper(**helper_kwargs)
+            return tfa.seq2seq.GreedyEmbeddingHelper(**helper_kwargs)
         if mode == 'sample':
             helper_kwargs['softmax_temperature'] = softmax_temperature
             helper_kwargs['seed'] = random_seed
-            return tf.contrib.seq2seq.SampleEmbeddingHelper(**helper_kwargs)
+            return tfa.seq2seq.SampleEmbeddingHelper(**helper_kwargs)
 
         raise ValueError('Unrecognized mode {!r}'.format(mode))
 
     def _dynamic_decode(self, helper, initial_state, max_length=None):
-        decoder = tf.contrib.seq2seq.BasicDecoder(
+        decoder = tfa.seq2seq.BasicDecoder(
             cell=self.cell,
             helper=helper,
             initial_state=initial_state,
             output_layer=self._output_projection)
-        output, state, _ = tf.contrib.seq2seq.dynamic_decode(
+        output, state, _ = tfa.seq2seq.dynamic_decode(
             decoder=decoder,
             output_time_major=False,
             impute_finished=True,
@@ -154,7 +155,7 @@ class RNNDecoder(Component):
         return output, state
 
 
-class _AttentionWrapper(tf.contrib.seq2seq.AttentionWrapper):
+class _AttentionWrapper(tfa.seq2seq.AttentionWrapper):
     """A modified `AttentionWrapper`.
 
     This wrapper adds an attention step before starting the decoding (if enabled by the

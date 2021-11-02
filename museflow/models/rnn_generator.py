@@ -1,15 +1,15 @@
+from museflow.trainer import BasicTrainer
+from museflow.model_utils import (DatasetManager, create_train_op, prepare_train_and_val_data,
+                                  set_random_seed)
+from museflow.components import RNNDecoder, EmbeddingLayer
+from museflow import logger
 import argparse
 import os
 import pickle
 
 from confugue import Configuration, configurable
-import tensorflow as tf
-
-from museflow import logger
-from museflow.components import RNNDecoder, EmbeddingLayer
-from museflow.model_utils import (DatasetManager, create_train_op, prepare_train_and_val_data,
-                                  set_random_seed)
-from museflow.trainer import BasicTrainer
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 @configurable

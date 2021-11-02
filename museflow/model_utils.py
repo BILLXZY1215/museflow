@@ -1,10 +1,11 @@
+from tensorflow.python.util import nest
+from museflow import logger
 import random
 
 from confugue import configurable
 import numpy as np
-import tensorflow as tf
-
-from museflow import logger
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 @configurable(params=['variables', 'max_gradient_norm', 'name'])
@@ -177,14 +178,14 @@ class DatasetManager:
         # Flatten the structure of each batch, put the corresponding elements together and restore
         # the structure.
         structure = results[0]
-        results_flat = zip(*(tf.contrib.framework.nest.flatten(r) for r in results))
+        results_flat = zip(*(nest.flatten(r) for r in results))
         if concat_batches:
             # We do not use np.concatenate since the shapes of the batches might be incompatible.
             # Instead, we stack the items of all batches in a list.
             results_flat = [[x for batch in r for x in batch] for r in results_flat]
         else:
             results_flat = [list(r) for r in results_flat]
-        results = tf.contrib.framework.nest.pack_sequence_as(structure, results_flat)
+        results = nest.pack_sequence_as(structure, results_flat)
 
         if dataset_name == '__tmp':
             self.remove_dataset(dataset_name)

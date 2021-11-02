@@ -1,8 +1,8 @@
-from confugue import configurable
-import tensorflow as tf
-
-from museflow.nn.rnn import DropoutWrapper
 from .component import Component, using_scope
+from museflow.nn.rnn import DropoutWrapper
+from confugue import configurable
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 @configurable(params=['output_states', 'name'])
